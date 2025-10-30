@@ -5,7 +5,8 @@
 >
 > **Sobre**  
 > Assim, como outros membros da família dos psitacídeos, os periquitos também formam casais para a vida toda. O
-> Periquito-de-cara-suja é uma ave exclusivamente nordestina, atualmente ele ocorre em apenas 3 locais no estado do Ceara.
+> Periquito-de-cara-suja é uma ave exclusivamente nordestina, atualmente ele ocorre em apenas 3 locais no estado do
+> Ceara.
 > É endêmica da Mata Atlântica. É uma espécie social que vive em bandos familiares de aproximadamente 4 a 15 indivíduos.
 >
 > **Ameaças**    

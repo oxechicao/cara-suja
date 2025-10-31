@@ -41,10 +41,25 @@ class UsersControllerTest {
                 )
                 .andExpect(status().isCreated());
         }
+
+        @Test
+        @DisplayName("should return error when fields are empty")
+        void shouldReturnErrorWhenFieldsAreNotValid() throws Exception {
+            mvc.perform(
+                    MockMvcRequestBuilders.post("/api/v1/users")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "",
+                                    "email": "",
+                                    "password": "",
+                                    "serialKey": ""
+                                }
+                            """)
+                )
+                .andExpect(status().isBadRequest());
         }
-    @Test
-    void postRegisterUser() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/users").accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
     }
+
 }

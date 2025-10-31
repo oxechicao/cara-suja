@@ -15,6 +15,6 @@ public class UsersController {
     @PostMapping()
     public ResponseEntity<Map<String, String>> postUser() {
         Map<String, String> resp = new HashMap<>();
-        return new ResponseEntity<>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.CREATED);
     }
 }

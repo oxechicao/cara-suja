@@ -1,10 +1,13 @@
 package ninja.oxente.cara_suja.presentation.controllers;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import ninja.oxente.cara_suja.application.services.user.UserService;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
+import ninja.oxente.cara_suja.presentation.dto.user.UserList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,5 +28,11 @@ public class UsersController {
         @Valid @RequestBody RegisterUserRequest requestBody) {
         String newId = this.userService.createNewUser(requestBody);
         return new ResponseEntity<>(newId, HttpStatus.CREATED);
+    }
+
+    @GetMapping(path = "", produces = "application/json")
+    public ResponseEntity<List<UserList>> getUsers() {
+        List<UserList> users = this.userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

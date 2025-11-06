@@ -1,13 +1,12 @@
 package ninja.oxente.cara_suja.builders;
 
 import java.util.List;
-import java.util.UUID;
 import ninja.oxente.cara_suja.domains.karteira.KarteiraModel;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 
 public class UserModelBuilder {
 
-    private UUID id;
+    private String id;
     private String name;
     private String email;
     private String password;
@@ -24,7 +23,7 @@ public class UserModelBuilder {
         this.karteiras = model.karteiras();
     }
 
-    public UserModelBuilder id(UUID value) {
+    public UserModelBuilder id(String value) {
         this.id = value;
         return this;
     }

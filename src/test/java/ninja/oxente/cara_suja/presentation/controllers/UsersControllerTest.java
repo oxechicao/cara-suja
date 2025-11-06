@@ -7,9 +7,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import java.util.UUID;
 import ninja.oxente.cara_suja.application.services.user.UserService;
 import ninja.oxente.cara_suja.builders.RegisterNewUserRequestBuilder;
+import ninja.oxente.cara_suja.builders.UserListBuilder;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -168,6 +170,42 @@ class UsersControllerTest {
                 .andExpect(jsonPath("$.message").value("Invalid fields"))
                 .andExpect(jsonPath("$.errors.name").value(
                     "Name should contain only letters, digits, hyphens, quote or blank space"));
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/v1/users")
+    class GetUsers {
+
+        @Test
+        @DisplayName("SHOULD return a list of users WHEN find user on database")
+        void testOkGetAllUsers() throws Exception {
+            UserListBuilder builder = new UserListBuilder();
+            when(userService.getAllUsers()).thenReturn(List.of(builder.build(), builder.build()));
+
+            mvc.perform(
+                    MockMvcRequestBuilders.get("/api/v1/users")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2));
+
+            verify(userService, times(1)).getAllUsers();
+        }
+
+        @Test
+        @DisplayName("SHOULD return empty list WHEN no users found on database")
+        void testOkNoUsersFound() throws Exception {
+            mvc.perform(
+                    MockMvcRequestBuilders.get("/api/v1/users")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(0));
+
+            verify(userService, times(1)).getAllUsers();
         }
     }
 }

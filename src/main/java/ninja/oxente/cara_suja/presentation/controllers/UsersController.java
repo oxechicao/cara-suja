@@ -1,5 +1,6 @@
 package ninja.oxente.cara_suja.presentation.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import ninja.oxente.cara_suja.application.services.user.UserService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "Users", description = "CRUD for users")
 public class UsersController {
 
     private final UserService userService;

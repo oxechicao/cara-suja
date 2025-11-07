@@ -12,6 +12,7 @@ import java.util.UUID;
 import ninja.oxente.cara_suja.application.services.user.UserService;
 import ninja.oxente.cara_suja.builders.RegisterNewUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UserListBuilder;
+import ninja.oxente.cara_suja.config.BaseTestConfig;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,11 +27,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UsersControllerTest {
+class UsersControllerTest extends BaseTestConfig {
 
     @Autowired
     private MockMvc mvc;
-
     @MockitoBean
     private UserService userService;
 
@@ -207,5 +207,11 @@ class UsersControllerTest {
 
             verify(userService, times(1)).getAllUsers();
         }
+    }
+
+    @Nested
+    @DisplayName("POST /api/v1/users")
+    class PostUsersTests {
+
     }
 }

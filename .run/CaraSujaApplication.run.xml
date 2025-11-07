@@ -3,7 +3,7 @@
         nameIsGenerated="true" type="Application">
         <extension name="coverage">
             <pattern>
-                <option name="PATTERN" value="ninja.oxente.cara_suja.*"/>
+                <option name="PATTERN" value="ninja.oxente.cara_suja.infrastructure.security.*"/>
                 <option name="ENABLED" value="true"/>
             </pattern>
         </extension>

@@ -7,9 +7,10 @@ import java.util.List;
 import ninja.oxente.cara_suja.builders.RegisterNewUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UserEntityBuilder;
 import ninja.oxente.cara_suja.infrastructure.persistence.entities.UserEntity;
-import ninja.oxente.cara_suja.infrastructure.persistence.repositories.UserRepository;
+import ninja.oxente.cara_suja.infrastructure.persistence.repositories.MongoUserRepository;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
 import ninja.oxente.cara_suja.presentation.dto.user.UserList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,12 @@ public class UsersControllerIntegrationTest extends PresentationBaseIntegrationT
     private final String baseUrl = "/api/v1/users";
 
     @Autowired
-    private UserRepository userRepository;
+    private MongoUserRepository mongoUserRepository;
+
+    @BeforeEach
+    void setUp() {
+        mongoUserRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("SHOULD register new user WHEN valid inputs was send")
@@ -34,7 +40,7 @@ public class UsersControllerIntegrationTest extends PresentationBaseIntegrationT
         String response = this.restTemplate.postForObject(this.baseUrl, requestUser, String.class);
         assertNotNull(response);
 
-        UserEntity user = this.userRepository.findAll().getFirst();
+        UserEntity user = this.mongoUserRepository.findAll().getFirst();
 
         assertNotNull(user);
         assertEquals(response, user.id());
@@ -62,6 +68,6 @@ public class UsersControllerIntegrationTest extends PresentationBaseIntegrationT
             .password("dark-side")
             .build();
 
-        this.userRepository.saveAll(List.of(user1, user2));
+        this.mongoUserRepository.saveAll(List.of(user1, user2));
     }
 }

@@ -4,10 +4,10 @@
 * [Step by step](#step-by-step)
   * [Get spring boot initialize](#get-spring-boot-initialize)
   * [Setup Mongodb connection for localhost](#setup-mongodb-connection-for-localhost)
-  * [Writing Features](#writing-features)
-    * [Controllers](#controllers)
-    * [Service](#service)
-    * [Repository](#repository)
+  * [Coding architecture and best practices](#coding-architecture-and-best-practices)
+    * [Presentation/Controllers](#presentationcontrollers)
+    * [Application/Service](#applicationservice)
+    * [Infrastructure/Persistence/Repository](#infrastructurepersistencerepository)
   * [Features](#features)
     * [Create/Register new user](#createregister-new-user)
       * [User Controller layer](#user-controller-layer)
@@ -32,9 +32,37 @@ spring.data.mongodb.uri=mongodb://localhost:27017
 spring.data.mongodb.database=karteiradb
 ```
 
-## Writing Features
+## Coding architecture and best practices
 
-### Controllers
+The project is structured by Domain Driven Design (DDD) principles, and the code follow Test Driven
+Development (TDD) approach.
+
+Following the user journey when do request, the code is structured in four main layers.
+
+- Presentation layer: That contains all external interface code, like REST controllers,
+  - Controller: Routes and request validation.
+  - DTOs: Data Transfer Objects for request and response.
+  - Exceptions: Custom exceptions for the application.
+  - Handlers: Exception handlers for the application.
+- Application layer (Service)
+  - Service: Business logic and application services.
+  - Mappers: Mappers to convert between DTOs and domain models.
+- Domain layer (Domain Model):
+  - Models: Domain models for the application.
+  - Value Objects: Value objects for the domain models.
+  - Enums: Enums for the domain models.
+  - Security: Domain security models and interfaces.
+    - Hasher: Interface for password hashing.
+- Infrastructure layer
+  - Persistence: Database access and repositories.
+    - Repository: Data access layer for the application.
+    - Entities: Database entities for the application.
+    - Mappers: Mappers to convert between domain models and entities.
+  - Security: Security configurations and implementations.
+    - Example:
+      - Argo2Hasher: Password hashing implementation.
+
+### Presentation/Controllers
 
 The controller tests on this project don't test the entire workflow. It should be unit test as much
 as possible.
@@ -45,13 +73,13 @@ The only goal of the controller is:
 3. catch the errors correctly
 4. response correctly
 
-### Service
+### Application/Service
 
 1. Should verify that calls all external functions correctly
 2. Should check if the response are respecting the contract
 3. Should test all throw exceptions cases
 
-### Repository
+### Infrastructure/Persistence/Repository
 
 Should do integration test if possible.
 

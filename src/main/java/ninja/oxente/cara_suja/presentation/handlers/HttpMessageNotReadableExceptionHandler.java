@@ -1,4 +1,4 @@
-package ninja.oxente.cara_suja.presentation.exceptions;
+package ninja.oxente.cara_suja.presentation.handlers;
 
 import java.util.Optional;
 import ninja.oxente.cara_suja.presentation.dto.common.ErrorResponse;

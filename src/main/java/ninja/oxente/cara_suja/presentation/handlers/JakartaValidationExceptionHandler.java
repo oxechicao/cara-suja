@@ -1,4 +1,4 @@
-package ninja.oxente.cara_suja.presentation.exceptions;
+package ninja.oxente.cara_suja.presentation.handlers;
 
 import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package ninja.oxente.cara_suja;
+package ninja.oxente.cara_suja.infrastructure.security;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

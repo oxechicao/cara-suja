@@ -1,29 +1,16 @@
 package ninja.oxente.cara_suja.config;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.mongodb.MongoDBContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+import org.springframework.boot.test.context.SpringBootTest;
 
-public class BaseTestConfig {
+@SpringBootTest(properties = {
+    "de.flapdoodle.mongodb.embedded.version=4.21.0",
+    "spring.data.mongodb.port=0",
+    "spring.data.mongodb.host=localhost",
+    "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.session.SessionAutoConfiguration"
 
-    public static MongoDBContainer mongoDBContainer = new MongoDBContainer(
-        DockerImageName.parse("mongo:latest"));
+})
+@AutoConfigureDataMongo
+public abstract class BaseTestConfig {
 
-    @BeforeAll
-    static void beforeAll() {
-        mongoDBContainer.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        mongoDBContainer.stop();
-    }
-
-    @DynamicPropertySource
-    public static void overrideProperties(
-        org.springframework.test.context.DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-    }
 }

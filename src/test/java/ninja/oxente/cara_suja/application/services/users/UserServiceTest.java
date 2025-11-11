@@ -12,14 +12,12 @@ import ninja.oxente.cara_suja.application.mappers.UserDtoMapper;
 import ninja.oxente.cara_suja.application.services.user.UserService;
 import ninja.oxente.cara_suja.builders.RegisterNewUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UpdateUserRequestBuilder;
-import ninja.oxente.cara_suja.builders.UserEntityBuilder;
 import ninja.oxente.cara_suja.builders.UserListBuilder;
 import ninja.oxente.cara_suja.builders.UserModelBuilder;
 import ninja.oxente.cara_suja.domains.exceptions.EntityNotFoundException;
 import ninja.oxente.cara_suja.domains.repositories.UserRepository;
 import ninja.oxente.cara_suja.domains.security.IPasswordHasher;
 import ninja.oxente.cara_suja.domains.user.UserModel;
-import ninja.oxente.cara_suja.infrastructure.persistence.entities.UserEntity;
 import ninja.oxente.cara_suja.infrastructure.security.Argo2Hasher;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
 import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
@@ -135,7 +133,7 @@ class UserServiceTest {
             .name("Ahsoka Tano Updated")
             .build();
 
-        private final UserEntity existingUserEntity = new UserEntityBuilder()
+        private final UserModel existingUser = new UserModelBuilder()
             .id(UUID.randomUUID().toString())
             .name("Ahsoka Tano")
             .email("ahsoka.tano@jedi.master")
@@ -163,9 +161,9 @@ class UserServiceTest {
         @Test
         @DisplayName("SHOULD update user WHEN user is found")
         public void shouldUpdateUserWhenUserIsFound() throws EntityNotFoundException {
-            String userId = existingUserEntity.id();
+            String userId = existingUser.id();
             UserModel userToSave = new UserModelBuilder(updateUserRequest).build();
-            UserModel userSaved = new UserModelBuilder(existingUserEntity)
+            UserModel userSaved = new UserModelBuilder(existingUser)
                 .name(this.updateUserRequest.name())
                 .build();
 
@@ -175,7 +173,7 @@ class UserServiceTest {
 
             assertEquals(updatedUser.id(), userId);
             assertEquals(updateUserRequest.name(), updatedUser.name());
-            assertEquals(existingUserEntity.email(), updatedUser.email());
+            assertEquals(existingUser.email(), updatedUser.email());
             verify(userRepository, times(1)).update(userToSave, userId);
         }
     }

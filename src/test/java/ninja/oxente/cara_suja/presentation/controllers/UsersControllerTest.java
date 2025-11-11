@@ -7,27 +7,29 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
 import ninja.oxente.cara_suja.application.services.user.UserService;
 import ninja.oxente.cara_suja.builders.RegisterNewUserRequestBuilder;
+import ninja.oxente.cara_suja.builders.UpdateUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UserListBuilder;
-import ninja.oxente.cara_suja.config.BaseTestConfig;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
+import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
+import ninja.oxente.cara_suja.presentation.dto.user.UserList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class UsersControllerTest extends BaseTestConfig {
+
+@WebMvcTest(UsersController.class)
+class UsersControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -210,8 +212,90 @@ class UsersControllerTest extends BaseTestConfig {
     }
 
     @Nested
-    @DisplayName("POST /api/v1/users")
-    class PostUsersTests {
+    @DisplayName("PUT /api/v1/users/{id}")
+    class PutUser {
 
+        @Test
+        @DisplayName("SHOULD return Bad Request WHEN body is empty")
+        void shouldReturnMethodNOtAllowedWhenTryToUpdateUser() throws Exception {
+            mvc.perform(
+                    MockMvcRequestBuilders.put("/api/v1/users/{id}", UUID.randomUUID().toString())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Required request body is missing"));
+        }
+
+        @Test
+        @DisplayName("SHOULD return e-mail invalid WHEN not valid e-mail sent")
+        void shoudlReturnEmailNotValid() throws Exception {
+            mvc.perform(
+                    MockMvcRequestBuilders.put("/api/v1/users/{id}", UUID.randomUUID().toString())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Ahsoka Tano",
+                                    "email": "email-invald",
+                                    "password": "ahsokatano"
+                                }
+                            """)
+                )
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value("Invalid fields"))
+                .andExpect(jsonPath("$.errors.email").value("E-mail not valid"));
+        }
+
+        @Test
+        @DisplayName("SHOULD return password less than 6 characters")
+        void shouldReturnInvalidPassword() throws Exception {
+            mvc.perform(
+                    MockMvcRequestBuilders.put("/api/v1/users/{id}", UUID.randomUUID().toString())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "name": "Ahsoka Tano",
+                                    "email": "ahsoka.tano@jedi.temple",
+                                    "password": "12345"
+                                }
+                            """)
+                )
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.message").value("Invalid fields"))
+                .andExpect(
+                    jsonPath("$.errors.password").value("Password must be more than 5 characters"));
+        }
+
+        @Test
+        @DisplayName("SHOULD update user WHEN valid inputs was send")
+        void shouldUpdateUser() throws Exception {
+            String id = UUID.randomUUID().toString();
+            UpdateUserRequest requestBuilder = new UpdateUserRequestBuilder()
+                .name("Ahsoka Tano Updated")
+                .build();
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestString = objectMapper.writeValueAsString(requestBuilder);
+
+            UserList userList = new UserListBuilder()
+                .id(id)
+                .name(requestBuilder.name())
+                .build();
+
+            when(userService.updateUser(id, requestBuilder)).thenReturn(userList);
+
+            mvc.perform(
+                    MockMvcRequestBuilders.put("/api/v1/users/{id}", id)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestString)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value(requestBuilder.name()));
+
+            verify(userService, times(1)).updateUser(id, requestBuilder);
+
+        }
     }
 }

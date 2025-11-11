@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
+import ninja.oxente.cara_suja.BaseIntegrationTest;
 import ninja.oxente.cara_suja.builders.UserEntityBuilder;
 import ninja.oxente.cara_suja.builders.UserModelBuilder;
 import ninja.oxente.cara_suja.domains.security.IPasswordHasher;
@@ -19,13 +20,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@DataMongoTest
 @Testcontainers
 @DisplayName("User Repository Integration Tests")
-public class UserRepositoryImplIntegrationTest extends PersistenceBaseIntegrationTest {
+public class UserRepositoryImplIntegrationTest extends BaseIntegrationTest {
 
     private final String password = "best-jedi-password";
     private final IPasswordHasher passwordHasher = new Argo2Hasher();

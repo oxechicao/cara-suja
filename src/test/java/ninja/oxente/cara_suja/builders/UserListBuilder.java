@@ -25,19 +25,23 @@ public class UserListBuilder {
         return new UserList(id, name, email, karteiras);
     }
 
-    void id(String value) {
+    public UserListBuilder id(String value) {
         id = value;
+        return this;
     }
 
-    void name(String value) {
+    public UserListBuilder name(String value) {
         name = value;
+        return this;
     }
 
-    void email(String value) {
+    public UserListBuilder email(String value) {
         email = value;
+        return this;
     }
 
-    void karteiras(List<KarteiraModel> value) {
+    public UserListBuilder karteiras(List<KarteiraModel> value) {
         karteiras = value;
+        return this;
     }
 }

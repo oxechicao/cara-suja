@@ -26,10 +26,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -39,7 +39,7 @@ jobs:
         run: ./gradlew clean assemble -x test -x integrationTest --no-daemon
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: build-artifacts
           path: build/**
@@ -51,17 +51,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
           cache: gradle
 
       - name: Download build artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v5
         with:
           name: build-artifacts
           path: build
@@ -76,17 +76,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
           cache: gradle
 
       - name: Download build artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v5
         with:
           name: build-artifacts
           path: build
@@ -138,10 +138,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -151,7 +151,7 @@ jobs:
         run: ./gradlew clean assemble -x test -x integrationTest --no-daemon
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: build-artifacts
           path: build/** 
@@ -171,17 +171,17 @@ unit-test:
 
   steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
 
     - name: Set up JDK 21
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: '21'
         cache: gradle
 
     - name: Download build artifact from build job
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v5
       with:
         name: build-artifacts
         path: build
@@ -196,17 +196,17 @@ unit-test:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
           cache: gradle
 
       - name: Download build artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v5
         with:
           name: build-artifacts
           path: build

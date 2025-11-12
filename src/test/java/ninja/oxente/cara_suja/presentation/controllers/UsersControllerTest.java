@@ -14,9 +14,10 @@ import ninja.oxente.cara_suja.application.services.user.UserService;
 import ninja.oxente.cara_suja.builders.RegisterNewUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UpdateUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UserListBuilder;
-import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UserList;
+import ninja.oxente.cara_suja.domains.exceptions.EntityNotFoundException;
+import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UserListDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class UsersControllerTest {
         @Test
         @DisplayName("SHOULD register new user WHEN valid inputs was send")
         void testOkRegisterNewUser() throws Exception {
-            RegisterUserRequest requestUser = new RegisterNewUserRequestBuilder()
+            RegisterUserRequestDto requestUser = new RegisterNewUserRequestBuilder()
                 .name("Ahsoka Tano")
                 .email("ahsoka.tano@jedi.temple")
                 .password("best-jedi")
@@ -271,18 +272,18 @@ class UsersControllerTest {
         @DisplayName("SHOULD update user WHEN valid inputs was send")
         void shouldUpdateUser() throws Exception {
             String id = UUID.randomUUID().toString();
-            UpdateUserRequest requestBuilder = new UpdateUserRequestBuilder()
+            UpdateUserRequestDto requestBuilder = new UpdateUserRequestBuilder()
                 .name("Ahsoka Tano Updated")
                 .build();
             ObjectMapper objectMapper = new ObjectMapper();
             String requestString = objectMapper.writeValueAsString(requestBuilder);
 
-            UserList userList = new UserListBuilder()
+            UserListDto userListDto = new UserListBuilder()
                 .id(id)
                 .name(requestBuilder.name())
                 .build();
 
-            when(userService.updateUser(id, requestBuilder)).thenReturn(userList);
+            when(userService.updateUser(id, requestBuilder)).thenReturn(userListDto);
 
             mvc.perform(
                     MockMvcRequestBuilders.put("/api/v1/users/{id}", id)
@@ -296,6 +297,25 @@ class UsersControllerTest {
 
             verify(userService, times(1)).updateUser(id, requestBuilder);
 
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/v1/users/{id}")
+    class GetUserById {
+
+        @Test
+        @DisplayName("SHOULD return User Not Found WHEN user does not exist")
+        void shouldReturnUserNotFoundWhenUserDoesNotExist() throws Exception {
+            String id = UUID.randomUUID().toString();
+            when(userService.getUserById(id)).thenThrow(
+                new EntityNotFoundException("User Not Found"));
+            mvc.perform(
+                    MockMvcRequestBuilders.get("/api/v1/users/{id}", id)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User Not Found"));
         }
     }
 }

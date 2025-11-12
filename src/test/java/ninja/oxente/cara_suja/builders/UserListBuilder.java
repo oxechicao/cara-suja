@@ -3,7 +3,7 @@ package ninja.oxente.cara_suja.builders;
 import java.util.List;
 import ninja.oxente.cara_suja.domains.karteira.KarteiraModel;
 import ninja.oxente.cara_suja.domains.user.UserModel;
-import ninja.oxente.cara_suja.presentation.dto.user.UserList;
+import ninja.oxente.cara_suja.presentation.dto.user.UserListDto;
 
 public class UserListBuilder {
 
@@ -21,8 +21,8 @@ public class UserListBuilder {
         email = value.email();
     }
 
-    public UserList build() {
-        return new UserList(id, name, email, karteiras);
+    public UserListDto build() {
+        return new UserListDto(id, name, email, karteiras);
     }
 
     public UserListBuilder id(String value) {

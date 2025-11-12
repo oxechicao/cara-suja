@@ -6,9 +6,9 @@ import ninja.oxente.cara_suja.application.mappers.UserDtoMapper;
 import ninja.oxente.cara_suja.domains.exceptions.EntityNotFoundException;
 import ninja.oxente.cara_suja.domains.repositories.UserRepository;
 import ninja.oxente.cara_suja.domains.user.UserModel;
-import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UserList;
+import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UserListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public String createNewUser(RegisterUserRequest userRequest) {
+    public String createNewUser(RegisterUserRequestDto userRequest) {
         UserModel userSaved = userRepository.save(
             this.userDtoMapper.fromRegisterNewUserRequest(userRequest)
         );
@@ -35,14 +35,24 @@ public class UserService {
         return userSaved.id();
     }
 
-    public List<UserList> getAllUsers() {
+    public List<UserListDto> getAllUsers() {
         List<UserModel> entities = this.userRepository.findAll();
         return entities.stream()
             .map(this.userDtoMapper::toUserList)
             .collect(Collectors.toList());
     }
 
-    public UserList updateUser(String id, UpdateUserRequest request)
+    public UserListDto getUserById(String id) throws EntityNotFoundException {
+        UserModel userModel = userRepository.findById(id);
+
+        if (userModel == null) {
+            throw new EntityNotFoundException("User not found");
+        }
+
+        return userDtoMapper.toUserList(userModel);
+    }
+
+    public UserListDto updateUser(String id, UpdateUserRequestDto request)
         throws EntityNotFoundException {
         UserModel requestModel = userDtoMapper.fromUpdateUserRequest(request);
         UserModel userUpdated = userRepository.update(requestModel, id);

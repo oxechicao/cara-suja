@@ -1,6 +1,6 @@
 package ninja.oxente.cara_suja.builders;
 
-import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
+import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
 
 public class RegisterNewUserRequestBuilder {
 
@@ -12,15 +12,15 @@ public class RegisterNewUserRequestBuilder {
     public RegisterNewUserRequestBuilder() {
     }
 
-    public RegisterNewUserRequestBuilder(RegisterUserRequest register) {
+    public RegisterNewUserRequestBuilder(RegisterUserRequestDto register) {
         this.name = register.name();
         this.email = register.email();
         this.password = register.password();
         this.serialKey = register.serialKey();
     }
 
-    public RegisterUserRequest build() {
-        return new RegisterUserRequest(name, email, password, serialKey);
+    public RegisterUserRequestDto build() {
+        return new RegisterUserRequestDto(name, email, password, serialKey);
     }
 
     public RegisterNewUserRequestBuilder name(String value) {

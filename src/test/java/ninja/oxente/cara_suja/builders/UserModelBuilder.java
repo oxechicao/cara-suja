@@ -1,11 +1,12 @@
 package ninja.oxente.cara_suja.builders;
 
 import java.util.List;
+import java.util.UUID;
 import ninja.oxente.cara_suja.domains.karteira.KarteiraModel;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.infrastructure.persistence.entities.UserEntity;
-import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
+import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
 
 public class UserModelBuilder {
 
@@ -18,7 +19,7 @@ public class UserModelBuilder {
     public UserModelBuilder() {
     }
 
-    public UserModelBuilder(UpdateUserRequest request) {
+    public UserModelBuilder(UpdateUserRequestDto request) {
         this.id = null;
         this.name = request.name();
         this.email = request.email();
@@ -35,7 +36,7 @@ public class UserModelBuilder {
     }
 
 
-    public UserModelBuilder(RegisterUserRequest request) {
+    public UserModelBuilder(RegisterUserRequestDto request) {
         this.name = request.name();
         this.email = request.email();
         this.password = request.password();
@@ -79,4 +80,17 @@ public class UserModelBuilder {
         return new UserModel(id, name, email, password, karteiras);
     }
 
+    public UserModel ahsokaTano(boolean created) {
+        if (created) {
+            id(UUID.randomUUID().toString());
+        } else {
+            id(null);
+        }
+
+        name("Ahsoka Tano");
+        email("ahsoka.tano@jedi.master");
+        password("secret-jedi");
+
+        return build();
+    }
 }

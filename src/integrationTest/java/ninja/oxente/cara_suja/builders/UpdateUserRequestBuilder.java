@@ -1,6 +1,6 @@
 package ninja.oxente.cara_suja.builders;
 
-import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
+import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
 
 public class UpdateUserRequestBuilder {
 
@@ -11,8 +11,8 @@ public class UpdateUserRequestBuilder {
     public UpdateUserRequestBuilder() {
     }
 
-    public UpdateUserRequest build() {
-        return new UpdateUserRequest(
+    public UpdateUserRequestDto build() {
+        return new UpdateUserRequestDto(
             this.name,
             this.email,
             this.password

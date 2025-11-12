@@ -19,9 +19,9 @@ import ninja.oxente.cara_suja.domains.repositories.UserRepository;
 import ninja.oxente.cara_suja.domains.security.IPasswordHasher;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.infrastructure.security.Argo2Hasher;
-import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UserList;
+import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UserListDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -58,7 +58,7 @@ class UserServiceTest {
             String password = "secret-jedi";
             String encodedPassword = passwordHasher.encode(password);
 
-            RegisterUserRequest request = new RegisterNewUserRequestBuilder()
+            RegisterUserRequestDto request = new RegisterNewUserRequestBuilder()
                 .name("Ahsoka Tano")
                 .email("ahsoka.tano@temple.jedi")
                 .password(password)
@@ -100,13 +100,13 @@ class UserServiceTest {
                     .build()
             );
 
-            List<UserList> expectedUsersList = List.of(
+            List<UserListDto> expectedUsersList = List.of(
                 new UserListBuilder(entities.get(0)).build(),
                 new UserListBuilder(entities.get(1)).build()
             );
 
             when(userRepository.findAll()).thenReturn(entities);
-            List<UserList> usersList = service.getAllUsers();
+            List<UserListDto> usersList = service.getAllUsers();
 
             verify(userRepository, times(1)).findAll();
             assertEquals(usersList, expectedUsersList);
@@ -119,7 +119,7 @@ class UserServiceTest {
         @DisplayName("SHOULD return an empty list WHEN no user is found on database")
         public void testGetAllUsersEmpty() {
             when(userRepository.findAll()).thenReturn(List.of());
-            List<UserList> usersList = service.getAllUsers();
+            List<UserListDto> usersList = service.getAllUsers();
             verify(userRepository, times(1)).findAll();
             assertEquals(0, usersList.size());
         }
@@ -129,7 +129,7 @@ class UserServiceTest {
     @DisplayName("UpdateUser tests")
     class UpdateUserTest {
 
-        private final UpdateUserRequest updateUserRequest = new UpdateUserRequestBuilder()
+        private final UpdateUserRequestDto updateUserRequestDto = new UpdateUserRequestBuilder()
             .name("Ahsoka Tano Updated")
             .build();
 
@@ -146,12 +146,12 @@ class UserServiceTest {
         @DisplayName("SHOULD throw exception WHEN user is not found")
         public void shouldThrowExceptionWhenUserNotFound() {
             UserModel requestModel = userDtoMapper.fromUpdateUserRequest(
-                this.updateUserRequest);
+                this.updateUserRequestDto);
 
             when(userRepository.update(requestModel, unkownUserId)).thenReturn(null);
 
             String message = assertThrowsExactly(EntityNotFoundException.class, () -> {
-                service.updateUser(this.unkownUserId, this.updateUserRequest);
+                service.updateUser(this.unkownUserId, this.updateUserRequestDto);
             }).getMessage();
 
             assertEquals("User not found", message);
@@ -162,19 +162,52 @@ class UserServiceTest {
         @DisplayName("SHOULD update user WHEN user is found")
         public void shouldUpdateUserWhenUserIsFound() throws EntityNotFoundException {
             String userId = existingUser.id();
-            UserModel userToSave = new UserModelBuilder(updateUserRequest).build();
+            UserModel userToSave = new UserModelBuilder(updateUserRequestDto).build();
             UserModel userSaved = new UserModelBuilder(existingUser)
-                .name(this.updateUserRequest.name())
+                .name(this.updateUserRequestDto.name())
                 .build();
 
             when(userRepository.update(userToSave, userId)).thenReturn(userSaved);
 
-            UserList updatedUser = service.updateUser(userId, updateUserRequest);
+            UserListDto updatedUser = service.updateUser(userId, updateUserRequestDto);
 
             assertEquals(updatedUser.id(), userId);
-            assertEquals(updateUserRequest.name(), updatedUser.name());
+            assertEquals(updateUserRequestDto.name(), updatedUser.name());
             assertEquals(existingUser.email(), updatedUser.email());
             verify(userRepository, times(1)).update(userToSave, userId);
+        }
+    }
+
+    @Nested
+    @DisplayName("GetUserById tests")
+    class GetUserByIdTest {
+
+        @Test
+        @DisplayName("SHOULD throw exception WHEN user is not found")
+        public void shouldThrowExceptionWhenUserNotFound() {
+            String unkownUserId = UUID.randomUUID().toString();
+
+            when(userRepository.findById(unkownUserId)).thenReturn(null);
+
+            String message = assertThrowsExactly(EntityNotFoundException.class, () -> {
+                service.getUserById(unkownUserId);
+            }).getMessage();
+
+            assertEquals("User not found", message);
+            verify(userRepository, times(1)).findById(unkownUserId);
+        }
+
+        @Test
+        @DisplayName("SHOULD return user WHEN user is found")
+        public void shouldReturnUserWhenUserIsFound() throws EntityNotFoundException {
+            UserModel existingUser = new UserModelBuilder().ahsokaTano(true);
+
+            when(userRepository.findById(existingUser.id())).thenReturn(existingUser);
+            UserListDto userListDto = service.getUserById(existingUser.id());
+            assertEquals(userListDto.id(), existingUser.id());
+            assertEquals(userListDto.name(), existingUser.name());
+            assertEquals(userListDto.email(), existingUser.email());
+            verify(userRepository, times(1)).findById(existingUser.id());
         }
     }
 }

@@ -4,8 +4,8 @@ import java.util.List;
 import ninja.oxente.cara_suja.domains.karteira.KarteiraModel;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.infrastructure.persistence.entities.UserEntity;
-import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequest;
-import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequest;
+import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
+import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
 
 public class UserModelBuilder {
 
@@ -18,7 +18,7 @@ public class UserModelBuilder {
     public UserModelBuilder() {
     }
 
-    public UserModelBuilder(UpdateUserRequest request) {
+    public UserModelBuilder(UpdateUserRequestDto request) {
         this.id = null;
         this.name = request.name();
         this.email = request.email();
@@ -35,7 +35,7 @@ public class UserModelBuilder {
     }
 
 
-    public UserModelBuilder(RegisterUserRequest request) {
+    public UserModelBuilder(RegisterUserRequestDto request) {
         this.name = request.name();
         this.email = request.email();
         this.password = request.password();

@@ -4,7 +4,10 @@
 * [Split tests](#split-tests)
   * [Introdução](#introdução)
   * [PROS & CONS](#pros--cons)
-  * [](#)
+  * [Como fazer](#como-fazer)
+    * [Criar módulo para os testes de integração](#criar-módulo-para-os-testes-de-integração)
+    * [Configurar o build.gradle](#configurar-o-buildgradle)
+  * [Referencias](#referencias)
 <!-- TOC -->
 
 ## Introdução

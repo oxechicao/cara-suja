@@ -80,7 +80,7 @@ public class UserModelBuilder {
         return new UserModel(id, name, email, password, karteiras);
     }
 
-    public UserModel ahsokaTano(boolean created) {
+    public UserModel caseAhsokaTano(boolean created) {
         if (created) {
             id(UUID.randomUUID().toString());
         } else {

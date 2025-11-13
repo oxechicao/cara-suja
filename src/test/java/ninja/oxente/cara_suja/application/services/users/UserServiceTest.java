@@ -200,7 +200,7 @@ class UserServiceTest {
         @Test
         @DisplayName("SHOULD return user WHEN user is found")
         public void shouldReturnUserWhenUserIsFound() throws EntityNotFoundException {
-            UserModel existingUser = new UserModelBuilder().ahsokaTano(true);
+            UserModel existingUser = new UserModelBuilder().caseAhsokaTano(true);
 
             when(userRepository.findById(existingUser.id())).thenReturn(existingUser);
             UserListDto userListDto = service.getUserById(existingUser.id());

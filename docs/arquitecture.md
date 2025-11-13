@@ -63,32 +63,33 @@ sequenceDiagram
   c ->> u: retorna a resposta com status 2xx
 ```
 
-### Estrutura de Entidades do Banco de Dados
+### Entities Relationship
 
 ```mermaid
 ---
-title: Estrutura de Entidades do Banco de Dados
+title: Database Entities Relationship
 ---
 
 erDiagram
-  users many(0) -- many(1) guests_users: "id-user_id and id-guest_id"
-  users many(1) -- many(1) karteiras_users: id-user_id
-  karteiras many(1) -- many(1) karteiras_users: id-karteira_id
-  karteiras many(1) -- many(0) income: id-karteira_id
-  karteiras many(1) -- many(0) invoice: id-karteira_id
-  karteiras one to many accounts: id-karteira_id
-  accounts one to one templates: template_id-id
+  serial_key one to many users: serial_keys has many users
+  users many(1) -- many(1) karteiras_users: associates users with karteiras
+  karteiras many(1) -- many(1) karteiras_users: associates karteiras with users
+  karteiras many(1) -- many(0) income: karteiras has many incomes
+  karteiras many(1) -- many(0) invoice: karteiras has many invoices
+  karteiras one to many accounts: karteira contains accounts
+  accounts one to one templates: accounts has one template
+
+  serial_key {
+    serial id PK
+    string key UK
+  }
 
   users {
     uuid id PK
     string email UK
     string password
     enum role
-  }
-
-  guests_users {
-    uuid user_id FK "user id"
-    uuid guest_id FK "user id"
+    uint key_id FK
   }
 
   karteiras {

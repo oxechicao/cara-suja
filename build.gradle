@@ -63,16 +63,20 @@ dependencies {
 }
 
 tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.withType(Test).configureEach {
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    useJUnitPlatform()
     doFirst {
         jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
-    }
-    useJUnitPlatform()
-    testLogging {
-        events "passed"
     }
 }
 
 tasks.register('integrationTest', Test) {
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+
     description = 'Runs integration tests.'
     group = 'verification'
 
@@ -81,10 +85,6 @@ tasks.register('integrationTest', Test) {
     shouldRunAfter test
 
     useJUnitPlatform()
-
-    testLogging {
-        events "passed"
-    }
 }
 
 check.dependsOn integrationTest

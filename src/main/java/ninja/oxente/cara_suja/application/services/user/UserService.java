@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import ninja.oxente.cara_suja.application.mappers.UserDtoMapper;
 import ninja.oxente.cara_suja.domains.exceptions.EntityNotFoundException;
-import ninja.oxente.cara_suja.domains.repositories.UserRepository;
+import ninja.oxente.cara_suja.domains.repositories.IUserRepository;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
 import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
@@ -17,18 +17,18 @@ public class UserService {
 
     private final UserDtoMapper userDtoMapper;
 
-    private final UserRepository userRepository;
+    private final IUserRepository IUserRepository;
 
     public UserService(
         UserDtoMapper userDtoMapper,
-        @Autowired UserRepository userRepository
+        @Autowired IUserRepository IUserRepository
     ) {
         this.userDtoMapper = userDtoMapper;
-        this.userRepository = userRepository;
+        this.IUserRepository = IUserRepository;
     }
 
     public String createNewUser(RegisterUserRequestDto userRequest) {
-        UserModel userSaved = userRepository.save(
+        UserModel userSaved = IUserRepository.save(
             this.userDtoMapper.fromRegisterNewUserRequest(userRequest)
         );
 
@@ -36,14 +36,14 @@ public class UserService {
     }
 
     public List<UserListDto> getAllUsers() {
-        List<UserModel> entities = this.userRepository.findAll();
+        List<UserModel> entities = this.IUserRepository.findAll();
         return entities.stream()
             .map(this.userDtoMapper::toUserList)
             .collect(Collectors.toList());
     }
 
     public UserListDto getUserById(String id) throws EntityNotFoundException {
-        UserModel userModel = userRepository.findById(id);
+        UserModel userModel = IUserRepository.findById(id);
 
         if (userModel == null) {
             throw new EntityNotFoundException("User not found");
@@ -55,7 +55,7 @@ public class UserService {
     public UserListDto updateUser(String id, UpdateUserRequestDto request)
         throws EntityNotFoundException {
         UserModel requestModel = userDtoMapper.fromUpdateUserRequest(request);
-        UserModel userUpdated = userRepository.update(requestModel, id);
+        UserModel userUpdated = IUserRepository.update(requestModel, id);
 
         if (userUpdated == null) {
             throw new EntityNotFoundException("User not found");

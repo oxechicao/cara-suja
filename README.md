@@ -42,5 +42,5 @@ adicionar um novo esquema a partir do arquivo baixado.
 
 ### Arquitetura e definições
 
-Acesse o arquivo [docs/arquitecture.md](docs/arquitecture.md) para mais detalhes sobre a
+Acesse o arquivo [docs/arquitecture.md](docs/architecture.md) para mais detalhes sobre a
 arquitetura do projeto e definições importantes.

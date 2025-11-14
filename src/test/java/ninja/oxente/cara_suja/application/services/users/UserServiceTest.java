@@ -17,7 +17,7 @@ import ninja.oxente.cara_suja.builders.UpdateUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UserListBuilder;
 import ninja.oxente.cara_suja.builders.UserModelBuilder;
 import ninja.oxente.cara_suja.domains.exceptions.EntityNotFoundException;
-import ninja.oxente.cara_suja.domains.repositories.UserRepository;
+import ninja.oxente.cara_suja.domains.repositories.IUserRepository;
 import ninja.oxente.cara_suja.domains.security.IPasswordHasher;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.infrastructure.security.Argo2Hasher;
@@ -41,13 +41,13 @@ class UserServiceTest {
     private final UserDtoMapper userDtoMapper = new UserDtoMapper(passwordHasher);
 
     @Mock
-    UserRepository userRepository;
+    IUserRepository IUserRepository;
 
     private UserService service;
 
     @BeforeEach
     void setUp() {
-        this.service = new UserService(userDtoMapper, userRepository);
+        this.service = new UserService(userDtoMapper, IUserRepository);
 
     }
 
@@ -71,12 +71,12 @@ class UserServiceTest {
             UserModel modelSaved = new UserModelBuilder(requestModel).id("saved-request-model")
                 .build();
 
-            when(userRepository.save(any(UserModel.class))).thenReturn(modelSaved);
+            when(IUserRepository.save(any(UserModel.class))).thenReturn(modelSaved);
 
             String result = service.createNewUser(request);
             ArgumentCaptor<UserModel> captor = ArgumentCaptor.forClass(UserModel.class);
 
-            verify(userRepository, times(1)).save(captor.capture());
+            verify(IUserRepository, times(1)).save(captor.capture());
             assertTrue(passwordHasher.verify(password, captor.getValue().password()));
             assertEquals(result, modelSaved.id());
         }
@@ -110,10 +110,10 @@ class UserServiceTest {
                 new UserListBuilder(entities.get(1)).build()
             );
 
-            when(userRepository.findAll()).thenReturn(entities);
+            when(IUserRepository.findAll()).thenReturn(entities);
             List<UserListDto> usersList = service.getAllUsers();
 
-            verify(userRepository, times(1)).findAll();
+            verify(IUserRepository, times(1)).findAll();
             assertEquals(usersList, expectedUsersList);
             assertEquals(2, usersList.size());
             assertEquals("Anakin Skywalker", usersList.get(0).name());
@@ -123,9 +123,9 @@ class UserServiceTest {
         @Test
         @DisplayName("SHOULD return an empty list WHEN no user is found on database")
         public void testGetAllUsersEmpty() {
-            when(userRepository.findAll()).thenReturn(List.of());
+            when(IUserRepository.findAll()).thenReturn(List.of());
             List<UserListDto> usersList = service.getAllUsers();
-            verify(userRepository, times(1)).findAll();
+            verify(IUserRepository, times(1)).findAll();
             assertEquals(0, usersList.size());
         }
     }
@@ -153,14 +153,14 @@ class UserServiceTest {
             UserModel requestModel = userDtoMapper.fromUpdateUserRequest(
                 this.updateUserRequestDto);
 
-            when(userRepository.update(requestModel, unkownUserId)).thenReturn(null);
+            when(IUserRepository.update(requestModel, unkownUserId)).thenReturn(null);
 
             String message = assertThrowsExactly(EntityNotFoundException.class,
                 () -> service.updateUser(this.unkownUserId,
                     this.updateUserRequestDto)).getMessage();
 
             assertEquals("User not found", message);
-            verify(userRepository, times(1)).update(requestModel, unkownUserId);
+            verify(IUserRepository, times(1)).update(requestModel, unkownUserId);
         }
 
         @Test
@@ -172,14 +172,14 @@ class UserServiceTest {
                 .name(this.updateUserRequestDto.name())
                 .build();
 
-            when(userRepository.update(userToSave, userId)).thenReturn(userSaved);
+            when(IUserRepository.update(userToSave, userId)).thenReturn(userSaved);
 
             UserListDto updatedUser = service.updateUser(userId, updateUserRequestDto);
 
             assertEquals(updatedUser.id(), userId);
             assertEquals(updateUserRequestDto.name(), updatedUser.name());
             assertEquals(existingUser.email(), updatedUser.email());
-            verify(userRepository, times(1)).update(userToSave, userId);
+            verify(IUserRepository, times(1)).update(userToSave, userId);
         }
     }
 
@@ -192,13 +192,13 @@ class UserServiceTest {
         public void shouldThrowExceptionWhenUserNotFound() {
             String unkownUserId = UUID.randomUUID().toString();
 
-            when(userRepository.findById(unkownUserId)).thenReturn(null);
+            when(IUserRepository.findById(unkownUserId)).thenReturn(null);
 
             String message = assertThrowsExactly(EntityNotFoundException.class,
                 () -> service.getUserById(unkownUserId)).getMessage();
 
             assertEquals("User not found", message);
-            verify(userRepository, times(1)).findById(unkownUserId);
+            verify(IUserRepository, times(1)).findById(unkownUserId);
         }
 
         @Test
@@ -206,12 +206,12 @@ class UserServiceTest {
         public void shouldReturnUserWhenUserIsFound() throws EntityNotFoundException {
             UserModel existingUser = new UserModelBuilder().caseAhsokaTano(true);
 
-            when(userRepository.findById(existingUser.id())).thenReturn(existingUser);
+            when(IUserRepository.findById(existingUser.id())).thenReturn(existingUser);
             UserListDto userListDto = service.getUserById(existingUser.id());
             assertEquals(userListDto.id(), existingUser.id());
             assertEquals(userListDto.name(), existingUser.name());
             assertEquals(userListDto.email(), existingUser.email());
-            verify(userRepository, times(1)).findById(existingUser.id());
+            verify(IUserRepository, times(1)).findById(existingUser.id());
         }
     }
 }

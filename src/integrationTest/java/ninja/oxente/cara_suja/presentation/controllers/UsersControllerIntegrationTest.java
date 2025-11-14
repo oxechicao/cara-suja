@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import ninja.oxente.cara_suja.BaseIntegrationTest;
 import ninja.oxente.cara_suja.builders.RegisterNewUserRequestBuilder;
 import ninja.oxente.cara_suja.builders.UpdateUserRequestBuilder;
-import ninja.oxente.cara_suja.infrastructure.persistence.repositories.MongoUserRepository;
+import ninja.oxente.cara_suja.infrastructure.persistence.repositories.UserMongoRepository;
 import ninja.oxente.cara_suja.presentation.dto.user.RegisterUserRequestDto;
 import ninja.oxente.cara_suja.presentation.dto.user.UpdateUserRequestDto;
 import ninja.oxente.cara_suja.presentation.dto.user.UserListDto;
@@ -22,15 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
-    private final MongoUserRepository mongoUserRepository;
+    private final UserMongoRepository userMongoRepository;
 
-    public UsersControllerIntegrationTest(@Autowired MongoUserRepository mongoUserRepository) {
-        this.mongoUserRepository = mongoUserRepository;
+    public UsersControllerIntegrationTest(@Autowired UserMongoRepository userMongoRepository) {
+        this.userMongoRepository = userMongoRepository;
     }
 
     @BeforeAll
     void beforeAll() {
-        mongoUserRepository.deleteAll();
+        userMongoRepository.deleteAll();
     }
 
     @Nested
@@ -44,7 +44,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
         @AfterAll
         void afterAll() {
-            mongoUserRepository.deleteAll();
+            userMongoRepository.deleteAll();
         }
 
         @Test

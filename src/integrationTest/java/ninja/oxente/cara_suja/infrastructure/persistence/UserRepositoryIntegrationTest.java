@@ -12,8 +12,8 @@ import ninja.oxente.cara_suja.builders.UserModelBuilder;
 import ninja.oxente.cara_suja.domains.security.IPasswordHasher;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.infrastructure.persistence.entities.UserEntity;
-import ninja.oxente.cara_suja.infrastructure.persistence.repositories.MongoUserRepository;
-import ninja.oxente.cara_suja.infrastructure.persistence.repositories.UserRepositoryImpl;
+import ninja.oxente.cara_suja.infrastructure.persistence.repositories.UserMongoRepository;
+import ninja.oxente.cara_suja.infrastructure.persistence.repositories.UserRepository;
 import ninja.oxente.cara_suja.infrastructure.security.Argo2Hasher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @DisplayName("User Repository Integration Tests")
-public class UserRepositoryImplIntegrationTest extends BaseIntegrationTest {
+public class UserRepositoryIntegrationTest extends BaseIntegrationTest {
 
     private final String password = "best-jedi-password";
     private final IPasswordHasher passwordHasher = new Argo2Hasher();
@@ -35,23 +35,23 @@ public class UserRepositoryImplIntegrationTest extends BaseIntegrationTest {
         .password(encodedPasswd)
         .build();
 
-    private final MongoUserRepository mongoUserRepository;
-    private UserRepositoryImpl userRepository;
+    private final UserMongoRepository userMongoRepository;
+    private UserRepository userRepository;
 
-    public UserRepositoryImplIntegrationTest(
-        @Autowired MongoUserRepository mongoUserRepository
+    public UserRepositoryIntegrationTest(
+        @Autowired UserMongoRepository userMongoRepository
     ) {
-        this.mongoUserRepository = mongoUserRepository;
+        this.userMongoRepository = userMongoRepository;
     }
 
     @BeforeEach
     void setUp() {
-        userRepository = new UserRepositoryImpl(mongoUserRepository);
-        mongoUserRepository.deleteAll();
+        userRepository = new UserRepository(userMongoRepository);
+        userMongoRepository.deleteAll();
     }
 
     private UserEntity addUser() {
-        return mongoUserRepository.save(entityMock);
+        return userMongoRepository.save(entityMock);
     }
 
     @Nested

@@ -2,7 +2,7 @@ package ninja.oxente.cara_suja.infrastructure.persistence.repositories;
 
 import java.util.List;
 import java.util.Optional;
-import ninja.oxente.cara_suja.domains.repositories.UserRepository;
+import ninja.oxente.cara_suja.domains.repositories.IUserRepository;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.infrastructure.persistence.entities.UserEntity;
 import ninja.oxente.cara_suja.infrastructure.persistence.mappers.UserPersistenceMapper;
@@ -13,13 +13,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Primary
 @Qualifier("infra-userRepository")
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepository implements IUserRepository {
 
-    private final MongoUserRepository mongo;
+    private final UserMongoRepository mongo;
 
     private final UserPersistenceMapper mapper;
 
-    public UserRepositoryImpl(MongoUserRepository mongo) {
+    public UserRepository(UserMongoRepository mongo) {
         this.mongo = mongo;
         this.mapper = new UserPersistenceMapper();
     }

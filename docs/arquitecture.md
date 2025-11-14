@@ -12,23 +12,74 @@ O projeto está estruturado seguindo os princípios da arquitetura limpa (Clean 
 - **Application**: Camada que contém a lógica de negócio da aplicação.
   - **Services**: Implementam as regras de negócio e orquestram as operações entre as diferentes
     camadas.
-  - **Mappers**: Responsáveis por converter entre DTOs e modelos de domínio.
+  - **Mappers**: Responsáveis por converter requests DTOs para modelos de domínio, e modelos de
+    domínio para response DTOs.
 - **Domain**: Camada que representa o núcleo da aplicação.
   - **Models**: Representam as entidades e objetos de valor do domínio. Por exemplo:
     - User, Product, Order, Exceptions
   - **Interfaces**: Definem as interfaces de integração para a camada de `infrastructure`. Por
     exemplo:
     - Repositories, Security, External Services
-- **Infrastructure**: Camada que lida com a persistência de dados e integrações externas.
+- **Infrastructure**: Camada que lida com as integrações externas.
   - **Persistence**: Implementa os repositórios definidos na camada de domínio, utilizando
-    tecnologias
-    específicas (ex. bancos de dados relacionais ou NoSQL).
+    tecnologias específicas (ex. bancos de dados relacionais ou NoSQL).
     - **Repositories**: Implementações concretas dos repositórios para persistência de dados.
     - **Mappers**: Responsáveis por converter entre modelos de domínio e entidades de banco de
       dados.
   - **Security**: Implementações relacionadas à segurança, como autenticação e autorização
 
 ## Arquitetura do projeto
+
+### Diagrama de camadas
+
+```mermaid
+---
+title: Diagrama de camadas da arquitetura limpa
+---
+flowchart TD
+  subgraph Presentation
+    direction TB
+    C[Controllers]
+    DTO[DTOs]
+  end
+
+  subgraph Application
+    direction TB
+    S[Services]
+    M[Application Mappers]
+  end
+
+  subgraph Domain
+    direction TB
+    DM[Domain Models]
+    DI[Domain Interfaces]
+  end
+
+  subgraph Infrastructure
+    direction TB
+    subgraph Persistence
+      direction TB
+      RM[Persistence Repositories]
+      RM2[Persistence Mappers]
+      DMu[Database Entities]
+    end
+    subgraph Security
+      H[Hash]
+    end
+  end
+
+  C -->|Uses| S
+  S -->|Uses| DM
+  S -->|Uses| M
+  M -->|Converts DTO to| DM
+  S -->|Uses| RM
+  RM -->|Implements| DI
+  RM -->|Uses| RM2
+  RM2 -->|Converts Models to| DMu
+  H -->|Implements| DI
+```
+
+### Fluxo básico de uma request POST
 
 ```mermaid
 ---

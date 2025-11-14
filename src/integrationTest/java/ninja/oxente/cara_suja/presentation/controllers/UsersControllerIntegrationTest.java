@@ -22,8 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
-    @Autowired
-    private MongoUserRepository mongoUserRepository;
+    private final MongoUserRepository mongoUserRepository;
+
+    public UsersControllerIntegrationTest(@Autowired MongoUserRepository mongoUserRepository) {
+        this.mongoUserRepository = mongoUserRepository;
+    }
 
     @BeforeAll
     void beforeAll() {
@@ -31,7 +34,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Nested
-    @DisplayName("User CRUD operations tests")
+    @DisplayName("GIVEN I want to test CRUD operations tests")
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class CrudOperationsTests {
 
@@ -63,8 +66,8 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         @Order(2)
-        @DisplayName("SHOULD return a list of users")
-        void shouldReturnListOfUsers() throws Exception {
+        @DisplayName("SHOULD return a list of users WHEN users are present")
+        void shouldReturnListOfUsers() {
             UserListDto[] response = restTemplate.getForObject(baseUrl, UserListDto[].class);
             assertNotNull(response);
             assertEquals(1, response.length);
@@ -73,8 +76,8 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         @Order(3)
-        @DisplayName("SHOULD return user updated")
-        void shouldReturnUserUpdated() throws Exception {
+        @DisplayName("SHOULD return user updated WHEN input is valid")
+        void shouldReturnUserUpdated() {
             String updateUrl = baseUrl + "/" + responseUserId;
 
             UpdateUserRequestDto updateUserRequestDto = new UpdateUserRequestBuilder()
@@ -88,8 +91,8 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         @Order(4)
-        @DisplayName("SHOULD return user by id")
-        void shouldReturnUserById() throws Exception {
+        @DisplayName("SHOULD return user by id WHEN user exists")
+        void shouldReturnUserById() {
             String getUrl = baseUrl + "/" + responseUserId;
 
             UserListDto user = restTemplate.getForObject(getUrl, UserListDto.class);

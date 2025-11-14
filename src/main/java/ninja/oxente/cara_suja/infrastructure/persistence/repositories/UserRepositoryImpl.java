@@ -3,11 +3,9 @@ package ninja.oxente.cara_suja.infrastructure.persistence.repositories;
 import java.util.List;
 import java.util.Optional;
 import ninja.oxente.cara_suja.domains.repositories.UserRepository;
-import ninja.oxente.cara_suja.domains.security.IPasswordHasher;
 import ninja.oxente.cara_suja.domains.user.UserModel;
 import ninja.oxente.cara_suja.infrastructure.persistence.entities.UserEntity;
 import ninja.oxente.cara_suja.infrastructure.persistence.mappers.UserPersistenceMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -19,15 +17,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final MongoUserRepository mongo;
 
-    private final IPasswordHasher passwordHasher;
-
     private final UserPersistenceMapper mapper;
 
-    public UserRepositoryImpl(MongoUserRepository mongo,
-        @Autowired IPasswordHasher passwordHasher) {
+    public UserRepositoryImpl(MongoUserRepository mongo) {
         this.mongo = mongo;
-        this.passwordHasher = passwordHasher;
-        this.mapper = new UserPersistenceMapper(passwordHasher);
+        this.mapper = new UserPersistenceMapper();
     }
 
     @Override

@@ -35,13 +35,18 @@ public class UserRepositoryImplIntegrationTest extends BaseIntegrationTest {
         .password(encodedPasswd)
         .build();
 
-    @Autowired
-    private MongoUserRepository mongoUserRepository;
+    private final MongoUserRepository mongoUserRepository;
     private UserRepositoryImpl userRepository;
+
+    public UserRepositoryImplIntegrationTest(
+        @Autowired MongoUserRepository mongoUserRepository
+    ) {
+        this.mongoUserRepository = mongoUserRepository;
+    }
 
     @BeforeEach
     void setUp() {
-        userRepository = new UserRepositoryImpl(mongoUserRepository, passwordHasher);
+        userRepository = new UserRepositoryImpl(mongoUserRepository);
         mongoUserRepository.deleteAll();
     }
 

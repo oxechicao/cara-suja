@@ -2,6 +2,8 @@ package ninja.oxente.cara_suja.application.services.users;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +29,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -35,7 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UserServiceTest {
 
     private final IPasswordHasher passwordHasher = new Argo2Hasher();
-    private final UserDtoMapper userDtoMapper = new UserDtoMapper();
+    private final UserDtoMapper userDtoMapper = new UserDtoMapper(passwordHasher);
 
     @Mock
     UserRepository userRepository;
@@ -56,7 +59,6 @@ class UserServiceTest {
         @DisplayName("SHOULD call call repository with the UserModel")
         public void testCreateUser() {
             String password = "secret-jedi";
-            String encodedPassword = passwordHasher.encode(password);
 
             RegisterUserRequestDto request = new RegisterNewUserRequestBuilder()
                 .name("Ahsoka Tano")
@@ -69,10 +71,13 @@ class UserServiceTest {
             UserModel modelSaved = new UserModelBuilder(requestModel).id("saved-request-model")
                 .build();
 
-            when(userRepository.save(requestModel)).thenReturn(modelSaved);
+            when(userRepository.save(any(UserModel.class))).thenReturn(modelSaved);
 
             String result = service.createNewUser(request);
-            verify(userRepository, times(1)).save(requestModel);
+            ArgumentCaptor<UserModel> captor = ArgumentCaptor.forClass(UserModel.class);
+
+            verify(userRepository, times(1)).save(captor.capture());
+            assertTrue(passwordHasher.verify(password, captor.getValue().password()));
             assertEquals(result, modelSaved.id());
         }
     }
@@ -150,9 +155,9 @@ class UserServiceTest {
 
             when(userRepository.update(requestModel, unkownUserId)).thenReturn(null);
 
-            String message = assertThrowsExactly(EntityNotFoundException.class, () -> {
-                service.updateUser(this.unkownUserId, this.updateUserRequestDto);
-            }).getMessage();
+            String message = assertThrowsExactly(EntityNotFoundException.class,
+                () -> service.updateUser(this.unkownUserId,
+                    this.updateUserRequestDto)).getMessage();
 
             assertEquals("User not found", message);
             verify(userRepository, times(1)).update(requestModel, unkownUserId);
@@ -189,9 +194,8 @@ class UserServiceTest {
 
             when(userRepository.findById(unkownUserId)).thenReturn(null);
 
-            String message = assertThrowsExactly(EntityNotFoundException.class, () -> {
-                service.getUserById(unkownUserId);
-            }).getMessage();
+            String message = assertThrowsExactly(EntityNotFoundException.class,
+                () -> service.getUserById(unkownUserId)).getMessage();
 
             assertEquals("User not found", message);
             verify(userRepository, times(1)).findById(unkownUserId);

@@ -63,12 +63,12 @@ dependencies {
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
-}
-
-tasks.withType(Test).configureEach {
     doFirst {
         jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
+    }
+    useJUnitPlatform()
+    testLogging {
+        events "passed"
     }
 }
 

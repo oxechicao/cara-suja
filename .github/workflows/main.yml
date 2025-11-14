@@ -26,8 +26,8 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      - name: Build (compile, package) without running tests
-        run: ./gradlew clean assemble -x test -x integrationTest --no-daemon
+      - name: Build (compile, package)
+        run: ./gradlew build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v5
@@ -36,6 +36,7 @@ jobs:
           path: build/**
 
   unit-test:
+    if: false
     name: unit-test
     needs: build
     runs-on: ubuntu-latest
@@ -61,6 +62,7 @@ jobs:
         run: ./gradlew test --no-daemon
 
   integration-test:
+    if: false
     name: integration-test
     needs: build
     runs-on: ubuntu-latest

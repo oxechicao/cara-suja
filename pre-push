@@ -1,0 +1,42 @@
+#!/bin/bash
+
+function remove_log_files() {
+    rm -f test.log integration.log
+}
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+echo -e "${CYAN}🚀 Building project (no tests)...${NC}"
+./gradlew clean assemble -x test -x integrationTest --no-daemon --quiet > /dev/null
+
+echo -e "${CYAN}🧪 Running unit tests in parallel...${NC}"
+./gradlew test --no-daemon --quiet > test.log 2>&1 &
+TEST_PID=$!
+
+echo -e "${CYAN}🔬 Running integration tests in parallel...${NC}"
+./gradlew integrationTest --no-daemon --quiet > integration.log 2>&1 &
+INTEGRATION_PID=$!
+
+wait $TEST_PID
+TEST_EXIT=$?
+wait $INTEGRATION_PID
+INTEGRATION_EXIT=$?
+
+if [[ $TEST_EXIT -ne 0 ]]; then
+  echo -e "${RED}❌ Unit tests failed!${NC}"
+  cat test.log
+fi
+
+if [[ $INTEGRATION_EXIT -ne 0 ]]; then
+  echo -e "${RED}❌ Integration tests failed!${NC}"
+  cat integration.log
+fi
+
+if [[ $TEST_EXIT -eq 0 && $INTEGRATION_EXIT -eq 0 ]]; then
+  echo -e "${GREEN}✅ All tasks finished!${NC}"
+fi
+
+  remove_log_files
